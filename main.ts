@@ -59,13 +59,13 @@ input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
     pins.digitalWritePin(DigitalPin.P0, 0)
 })
 function Helligkeit (pHelligkeit: number) {
-    if (!(bLicht) && pHelligkeit > 300) {
+    if (bLicht && pHelligkeit > 300) {
         bit.comment("Licht an bei 0")
-        bLicht = true
-        pins.digitalWritePin(DigitalPin.P1, 0)
-    } else if (bLicht && pHelligkeit < 200) {
-        bit.comment("Licht aus bei 1")
         bLicht = false
+        pins.digitalWritePin(DigitalPin.P1, 0)
+    } else if (!(bLicht) && pHelligkeit < 200) {
+        bit.comment("Licht aus bei 1")
+        bLicht = true
         pins.digitalWritePin(DigitalPin.P1, 1)
     }
     return pHelligkeit
