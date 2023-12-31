@@ -53,14 +53,23 @@ pins.onPulsed(DigitalPin.P3, PulseValue.Low, function () {
 })
 function zeigeStatus () {
     lcd16x2rgb.writeText(lcd16x2rgb.lcd16x2_eADDR(lcd16x2rgb.eADDR_LCD.LCD_16x2_x3E), 0, 0, 15, lcd16x2rgb.lcd16x2_text("" + bit.formatText(iMotor, 3, bit.eAlign.right) + bit.formatText(iServo, 4, bit.eAlign.right) + bit.formatText(iFahrstrecke, 4, bit.eAlign.right) + bit.formatText(iEncoder, 5, bit.eAlign.right)))
-    lcd16x2rgb.writeText(lcd16x2rgb.lcd16x2_eADDR(lcd16x2rgb.eADDR_LCD.LCD_16x2_x3E), 1, 0, 2, Helligkeit(), lcd16x2rgb.eAlign.right)
+    lcd16x2rgb.writeText(lcd16x2rgb.lcd16x2_eADDR(lcd16x2rgb.eADDR_LCD.LCD_16x2_x3E), 1, 0, 2, Helligkeit(pins.analogReadPin(AnalogPin.P2)), lcd16x2rgb.eAlign.right)
     lcd16x2rgb.writeText(lcd16x2rgb.lcd16x2_eADDR(lcd16x2rgb.eADDR_LCD.LCD_16x2_x3E), 1, 8, 15, "" + bit.formatText(bit.roundWithPrecision(wattmeter.get_bus_voltage_V(wattmeter.wattmeter_eADDR(wattmeter.eADDR.Watt_x45)), 1), 3, bit.eAlign.right) + "V" + bit.formatText(wattmeter.get_current_mA(wattmeter.wattmeter_eADDR(wattmeter.eADDR.Watt_x45)), 4, bit.eAlign.right))
 }
 input.onButtonEvent(Button.B, input.buttonEventClick(), function () {
     pins.digitalWritePin(DigitalPin.P0, 0)
 })
-function Helligkeit () {
-    return pins.analogReadPin(AnalogPin.P2)
+function Helligkeit (pHelligkeit: number) {
+    if (!(bLicht) && pHelligkeit > 300) {
+        bit.comment("Licht an bei 0")
+        bLicht = true
+        pins.digitalWritePin(DigitalPin.P1, 0)
+    } else if (bLicht && pHelligkeit < 200) {
+        bit.comment("Licht aus bei 1")
+        bLicht = false
+        pins.digitalWritePin(DigitalPin.P1, 1)
+    }
+    return pHelligkeit
 }
 function Konfiguration () {
     bit.comment("P0 Grove Relay; P1 RB LED (DRIVER_ENABLE)")
@@ -80,6 +89,7 @@ function ServoSteuerung (pWinkel: number) {
         return true
     }
 }
+let bLicht = false
 let iServo = 0
 let iEncoder = 0
 let iMotor = 0
