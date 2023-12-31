@@ -5,7 +5,6 @@ radio.onReceivedNumber(function (receivedNumber) {
         bit.comment("einmalig nach neu connected")
         btConnected = true
         qwiicmotor.controlRegister(qwiicmotor.qwiicmotor_eADDR(qwiicmotor.eADDR.Motor_x5D), qwiicmotor.eControl.DRIVER_ENABLE, true)
-        pins.digitalWritePin(DigitalPin.P1, 1)
         basic.setLedColor(0x00ff00)
     } else if (btConnected) {
         if (iFahrstrecke == 0) {
@@ -72,7 +71,7 @@ function Helligkeit (pHelligkeit: number) {
     return pHelligkeit
 }
 function Konfiguration () {
-    bit.comment("P0 Grove Relay; P1 RB LED (DRIVER_ENABLE)")
+    bit.comment("P0 Grove Relay; P1 Licht (5V LED)")
     bit.comment("P2 Fototransistor; P3 Encoder")
     bit.comment("P16 Ultraschall; P17 Servo")
     bit.comment("5 Erweiterungen: Funk; BIT; LCD 16x2; Motor; Wattmeter")
@@ -107,6 +106,7 @@ iFahrstrecke = 0
 radio.setGroup(240)
 pins.servoWritePin(AnalogPin.C17, 96)
 pins.setPull(DigitalPin.P3, PinPullMode.PullUp)
+led.enable(false)
 loops.everyInterval(800, function () {
     bit.comment("Überwachung Bluetooth")
     if (input.runningTime() - btLaufzeit > 60000) {
@@ -117,7 +117,6 @@ loops.everyInterval(800, function () {
         bit.comment("einmalig nach neu disconnected")
         btConnected = false
         qwiicmotor.controlRegister(qwiicmotor.qwiicmotor_eADDR(qwiicmotor.eADDR.Motor_x5D), qwiicmotor.eControl.DRIVER_ENABLE, false)
-        pins.digitalWritePin(DigitalPin.P1, 0)
     } else if (!(btConnected)) {
         bit.comment("dauerhaft wenn disconnected")
         zeigeStatus()
